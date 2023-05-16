@@ -62,17 +62,20 @@
                 label="Senha"
                 v-model="usuarioAtual.senha"
                 outlined
+                type="password"
             ></v-text-field>
             </v-col>
        </v-row>
       </v-container>
       <v-card-actions>
-        <v-btn color="success" @click="salvar" class="mx-1">
+        <v-row justify="center mb-2">
+          <v-btn color="success" @click="salvar" class="mx-1">
             Salvar
         </v-btn>
         <v-btn color="warning" @click="cancelar" class="mx-1">
             Cancelar
         </v-btn>
+        </v-row>
       </v-card-actions>
     </v-card>
         <v-data-table
@@ -81,31 +84,14 @@
       class="elevation-1"
     >
       <template v-slot:top>
-        <v-toolbar
-          flat
-          color="white"
-        >
+        <v-toolbar flat color="white">
           <v-toolbar-title>Usuarios Cadastrados</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn color="primary" @click="abrirFormulario" v-if="!mostrarForm">Novo Usuario</v-btn>
-          
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                <v-spacer></v-spacer>
-                
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
-
-
+      
       <template #[`item.acoes`]="{ item }">
         <v-icon
           small
@@ -208,10 +194,41 @@ export default {
         usuario.ativo = !usuario.ativo
     }, 
     salvar() {
-
+        if (this.itemEdicao==null){
+          this.adicionar();
+        } else {
+          this.salvarEdicao()
+        }
+        this.mostrarForm = false
+        this.cancelar();
+    },
+    adicionar(){
+        let usuarioCopia = {}
+        Object.assign(usuarioCopia, this.usuarioAtual)
+        usuarioCopia.id =  this.geradorId
+        usuarioCopia.ativo = true
+        this.usuarios.push(usuarioCopia)
+        this.geradorId++
+    },
+    salvarEdicao() {
+        for (let i = 0; i < this.usuarios.length; i++) {
+            if(this.itemEdicao.id == this.usuarios[i].id){
+              this.usuarios.splice(i, 1, this.itemEdicao)
+              break
+            }
+          
+        }
+    },
+    editar(usuario){
+        let usuarioCopia = {}
+        Object.assign(usuarioCopia, usuario)
+        this.itemEdicao = usuarioCopia
+        this.usuarioAtual =  usuarioCopia
+        this.mostrarForm = true
     },
     cancelar() {
-
+      this.usuarioAtual = {}
+      this.itemEdicao = null
     },
 }
 }
