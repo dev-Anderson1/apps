@@ -78,7 +78,7 @@
         </v-row>
       </v-card-actions>
     </v-card>
-        <v-data-table
+    <v-data-table
       :headers="cabecalhos"
       :items="usuarios"
       class="elevation-1"
